@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Most popular articles from the NYTimes</string>
+    <string name="article_name">Article</string>
+
+    <string name="tab_emailed">most emailed</string>
+    <string name="tab_shared">most shared</string>
+    <string name="tab_viewed">most viewed</string>
+    <string name="tab_favorites">Favorites</string>
+
+    <string name="txt_addFavorites">Add to favorites</string>
+    <string name="txt_additionalAddFavorites">Add to favorites to view the article offline.</string>
+
+    <string name="txt_Favorites">Favorites</string>
+    <string name="txt_additionalFavorites">Now you can watch the article offline.</string>
+
+    <string name="txt_deleteFavorites">Remove from favorites</string>
+    <string name="txt_additionalDeleteFavorites">If you delete the article from your favorites, you will no longer be able to view it offline.
+    </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
