@@ -1,78 +1,54 @@
 package com.popularapi.helper;
 
-import com.popularapi.model.view.ViewResult;
-import com.popularapi.model.email.EmailResult;
-import com.popularapi.model.share.ShareResult;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.bumptech.glide.Glide;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class Converter {
 
-    private static List<EmailResult> mEmailDataset = new ArrayList<>();
-    private static List<ShareResult> mShareDataset = new ArrayList<>();
-    private static List<ViewResult> mViewDataset = new ArrayList<>();
+    public static byte[] convertImageToArr(ImageView image) {
+        return null;
+//        Log.i("CONVERT URI", allImageUrl.toString());
+//
+//        byte[] byteArray = null;
+//
+//        try {
+//            Uri imageUri = Uri.parse(ActiveTab.getImageUrl());
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(image.getContext().getContentResolver(), imageUri);
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//            byteArray = stream.toByteArray();
+//
+//            Log.i("CONVERT", byteArray.toString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return byteArray;
 
-    private static Map<String, String> allUrl = new HashMap<>();
-    private static Map<String, String> allImageUrl = new HashMap<>();
-
-    public static void convertResToMap() {
-        allUrl.clear();
-        if (!mEmailDataset.isEmpty()) {
-            for (EmailResult result : mEmailDataset) {
-                allUrl.put(result.getTitle(), result.getUrl());
-                allImageUrl.put(result.getTitle(), result.getMedia().get(0).getMediaMetadata().get(0).getUrl());
-            }
-        }
-        if (!mShareDataset.isEmpty()) {
-            for (ShareResult result : mShareDataset) {
-                allUrl.put(result.getTitle(), result.getUrl());
-                allImageUrl.put(result.getTitle(), result.getMedia().get(0).getMediaMetadata().get(0).getUrl());
-            }
-        }
-        if (!mViewDataset.isEmpty()) {
-            for (ViewResult result : mViewDataset) {
-                allUrl.put(result.getTitle(), result.getUrl());
-                allImageUrl.put(result.getTitle(), result.getMedia().get(0).getMediaMetadata().get(0).getUrl());
-            }
-        }
-    }
-
-//    public static byte[] convertImageToArr(ImlageView image) {
 //        BitmapDrawable bitmapDrawable = (BitmapDrawable) image.getDrawable();
 //        Bitmap bitmap = bitmapDrawable.getBitmap();
+
+//        image.setDrawingCacheEnabled(true);
+//        Bitmap bitmap = image.getDrawingCache();
 //
 //        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream);
 //        byte[] imageInByte = stream.toByteArray();
 //        return imageInByte;
-//
-//        // ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
-//
-////        Bitmap bmp = BitmapFactory.decodeResource(image.getResources(), image.getDrawable());
-////        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-////        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-////        byte[] byteArray = stream.toByteArray();
-//    }
 
-    public static void setmEmailDataset(List<EmailResult> mEmailDataset) {
-        Converter.mEmailDataset = mEmailDataset;
-        convertResToMap();
+        // ByteArrayInputStream bis = new ByteArrayInputStream(imageInByte);
+
+//        Bitmap bmp = BitmapFactory.decodeResource(image.getResources(), image.getDrawable());
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//        byte[] byteArray = stream.toByteArray();
     }
 
-    public static void setmShareDataset(List<ShareResult> mShareDataset) {
-        Converter.mShareDataset = mShareDataset;
-        convertResToMap();
-    }
-
-    public static void setmViewDataset(List<ViewResult> mViewDataset) {
-        Converter.mViewDataset = mViewDataset;
-        convertResToMap();
-    }
-
-    public static Map<String, String> getAllUrl() {
-        return allUrl;
-    }
 }

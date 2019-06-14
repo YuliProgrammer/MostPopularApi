@@ -1,7 +1,7 @@
 package com.popularapi.ui.main.adapter;
 
 import com.popularapi.R;
-import com.popularapi.dao.Article;
+import com.popularapi.db.table.FavoritesArticle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,9 @@ import android.support.v7.widget.RecyclerView;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyViewHolder> {
 
-    private List<Article> mDataset = new ArrayList<>();
+    private List<FavoritesArticle> mDataset = new ArrayList<>();
 
-    public void setDataset(List<Article> results) {
+    public void setDataset(List<FavoritesArticle> results) {
         mDataset.clear();
         mDataset.addAll(results);
     }
@@ -46,8 +46,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     public void onBindViewHolder(FavoritesAdapter.MyViewHolder holder, int position) {
         holder.title.setText(mDataset.get(position).getTitle());
 
-//        byte[] imageArr = ActiveTab.getImage();
-//        Bitmap bmp = BitmapFactory.decodeByteArray(imageArr, 0, imageArr.length);
+       // byte[] imageArr = ActiveTab.getImage();
+//        byte[] imageArr = mDataset.get(position).getImage();
+//        Log.i("CONVERT", imageArr.toString());
+
+        //Bitmap bmp = BitmapFactory.decodeByteArray(imageArr, 0, imageArr.length);
 //        MyViewHolder.image.setImageBitmap(Bitmap.createScaledBitmap(bmp, MyViewHolder.image.getWidth(),
 //                MyViewHolder.image.getHeight(), false));
 
@@ -57,11 +60,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
 
     @Override
     public int getItemCount() {
-      //  return 0;
        return mDataset.size();
     }
 
-    public List<Article> getmDataset() {
+    public List<FavoritesArticle> getmDataset() {
         return mDataset;
     }
 }

@@ -1,9 +1,13 @@
 package com.popularapi.fragment;
 
 import com.popularapi.R;
-import com.popularapi.helper.Converter;
+import com.popularapi.db.ArticleDatabase;
+import com.popularapi.db.table.Articles;
+import com.popularapi.db.table.Titles;
 import com.popularapi.api.RetrofitClient;
+import com.popularapi.helper.DbHelper;
 import com.popularapi.model.email.EmailResponse;
+import com.popularapi.model.email.EmailResult;
 import com.popularapi.ui.main.adapter.EmailAdapter;
 
 import android.util.Log;
@@ -26,6 +30,7 @@ public class EmailedFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private EmailAdapter mAdapter;
+    private ArticleDatabase database = DbHelper.database;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +54,19 @@ public class EmailedFragment extends Fragment {
         RetrofitClient.getApiService().getEmail().enqueue(new Callback<EmailResponse>() {
             @Override
             public void onResponse(Call<EmailResponse> call, Response<EmailResponse> response) {
-                Converter.setmEmailDataset(response.body().getResults());
+                database.getTitlesDao().clearTable();
+
+                for (EmailResult email : response.body().getResults()) {
+                    Titles title = new Titles(email.getTitle());
+                    if (!database.getTitlesDao().containsTitle(email.getTitle())) {
+                        database.getTitlesDao().addTitle(title);
+                        int id = database.getTitlesDao().getTitleId(email.getTitle());
+                        Articles article = new Articles(id, email.getUrl(),
+                                email.getMedia().get(0).getMediaMetadata().get(0).getUrl(), false);
+                        database.getArticleDao().addArticles(article);
+                    }
+                }
+
                 mAdapter.setDataset(response.body().getResults());
                 mAdapter.notifyDataSetChanged();
             }

@@ -1,9 +1,11 @@
 package com.popularapi;
 
-import com.popularapi.helper.ActiveTab;
-import com.popularapi.helper.Converter;
+import com.popularapi.db.ArticleDatabase;
+import com.popularapi.db.table.Articles;
+import com.popularapi.helper.DbHelper;
 import com.popularapi.ui.main.SectionsPagerAdapter;
 
+import android.arch.persistence.room.Room;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageView;
@@ -16,12 +18,21 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    public static ArticleDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = Room.databaseBuilder(this, ArticleDatabase.class, "test2")
+                .allowMainThreadQueries()
+                .build();
+        DbHelper.database = database;
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -38,14 +49,20 @@ public class MainActivity extends AppCompatActivity {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                List<Articles> articles = database.getArticleDao().getAllArticles();
+                for (Articles article : articles) {
+                    if (article.isActive()) {
+                        article.setActive(false);
+                        break;
+                    }
+                }
+
                 String title = textView.getText().toString();
-                String url = Converter.getAllUrl().get(title);
-
-                //byte[] imageArr = Converter.convertImageToArr(imageView);
-                //  ActiveTab.setImage(imageArr);
-
-                ActiveTab.setTitle(title);
-                ActiveTab.setActiveUrl(url);
+                int id = database.getTitlesDao().getTitleId(title);
+                Articles article = database.getArticleDao().getArticles(id);
+                article.setActive(true);
+                database.getArticleDao().updateArticles(article);
                 Log.i("MAIN FAV", title);
 
                 Intent intent = new Intent("com.popularapi.ArticleActivity");

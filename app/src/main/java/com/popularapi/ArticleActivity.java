@@ -1,10 +1,10 @@
 package com.popularapi;
 
-import com.popularapi.dao.Article;
-import com.popularapi.dao.ArticleDatabase;
-import com.popularapi.helper.ActiveTab;
+import com.popularapi.db.table.Articles;
+import com.popularapi.db.table.FavoritesArticle;
+import com.popularapi.db.ArticleDatabase;
+import com.popularapi.helper.DbHelper;
 
-import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -18,24 +18,22 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 
+import java.util.List;
+
 public class ArticleActivity extends AppCompatActivity {
 
     TextView mainText;
     TextView additionalText;
     ImageView image;
-    public static ArticleDatabase database;
+    public static ArticleDatabase database = DbHelper.database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
-
-        database = Room.databaseBuilder(this, ArticleDatabase.class, "PopularApi")
-                .allowMainThreadQueries()
-                .build();
-
-        if (database.getArticleDao().containsArticle(ActiveTab.getTitle()) == true) {
+        if (database.getFavoritesArticleDao().containsFavorites(getActiveTitle())) {
+            Log.i("FAV", "CHECK");
             mainText = findViewById(R.id.textViewFavorites);
             additionalText = findViewById(R.id.txtAdditionalFavorites);
             mainText.setText(R.string.txt_deleteFavorites);
@@ -43,7 +41,7 @@ public class ArticleActivity extends AppCompatActivity {
         }
 
         WebView webView = findViewById(R.id.webView);
-        webView.loadUrl(ActiveTab.getActiveUrl());
+        webView.loadUrl(database.getArticleDao().getArticles(getActiveId()).getArticleUrl());
     }
 
     public void onBtnFavoritesClick(View view) {
@@ -65,11 +63,9 @@ public class ArticleActivity extends AppCompatActivity {
                     dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            FavoritesArticle article = new FavoritesArticle(getActiveTitle());
+                            database.getFavoritesArticleDao().addFavorites(article);
 
-                            if (!database.getArticleDao().containsArticle(ActiveTab.getTitle())) {
-                                Article article = new Article(ActiveTab.getTitle());
-                                database.getArticleDao().addArticle(article);
-                            }
                             mainText.setText(R.string.txt_deleteFavorites);
                             additionalText.setText(R.string.txt_additionalFavorites);
                         }
@@ -86,10 +82,9 @@ public class ArticleActivity extends AppCompatActivity {
                     dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (database.getArticleDao().containsArticle(ActiveTab.getTitle())) {
-                                Article article = new Article(ActiveTab.getTitle());
-                                database.getArticleDao().deleteArticle(article);
-                            }
+                            FavoritesArticle article = new FavoritesArticle(getActiveTitle());
+                            database.getFavoritesArticleDao().deleteFavorites(article);
+
                             mainText.setText(R.string.txt_addFavorites);
                             additionalText.setText(R.string.txt_additionalAddFavorites);
                         }
@@ -106,10 +101,27 @@ public class ArticleActivity extends AppCompatActivity {
                     alertDialog.show();
 
                 }
-
-                database.close();
             }
         });
     }
 
+    private int getActiveId() {
+        List<Articles> articles = database.getArticleDao().getAllArticles();
+        for (Articles article : articles) {
+            if (article.isActive()) {
+                return article.getTitleId();
+            }
+        }
+        return 0;
+    }
+
+    private String getActiveTitle() {
+        int id = getActiveId();
+        return database.getTitlesDao().getTitleName(id);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

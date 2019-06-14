@@ -1,9 +1,14 @@
 package com.popularapi.fragment;
 
 import com.popularapi.R;
+import com.popularapi.db.ArticleDatabase;
+import com.popularapi.db.table.Articles;
+import com.popularapi.db.table.Titles;
 import com.popularapi.helper.Converter;
 import com.popularapi.api.RetrofitClient;
+import com.popularapi.helper.DbHelper;
 import com.popularapi.model.view.ViewResponse;
+import com.popularapi.model.view.ViewResult;
 import com.popularapi.ui.main.adapter.ViewAdapter;
 
 import android.util.Log;
@@ -27,6 +32,7 @@ public class ViewedFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ViewAdapter mAdapter;
+    private ArticleDatabase database = DbHelper.database;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +56,19 @@ public class ViewedFragment extends Fragment {
         RetrofitClient.getApiService().getView().enqueue(new Callback<ViewResponse>() {
             @Override
             public void onResponse(Call<ViewResponse> call, Response<ViewResponse> response) {
-                Converter.setmViewDataset(response.body().getResults());
+                database.getTitlesDao().clearTable();
+
+                for (ViewResult view : response.body().getResults()) {
+                    Titles title = new Titles(view.getTitle());
+                    if (!database.getTitlesDao().containsTitle(view.getTitle())) {
+                        database.getTitlesDao().addTitle(title);
+                        int id = database.getTitlesDao().getTitleId(view.getTitle());
+                        Articles article = new Articles(id, view.getUrl(),
+                                view.getMedia().get(0).getMediaMetadata().get(0).getUrl(), false);
+                        database.getArticleDao().addArticles(article);
+                    }
+                }
+
                 mAdapter.setDataset(response.body().getResults());
                 mAdapter.notifyDataSetChanged();
             }
