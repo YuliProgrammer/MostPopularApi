@@ -56,7 +56,4 @@ public class EmailAdapter extends RecyclerView.Adapter<EmailAdapter.MyViewHolder
         return mDataset.size();
     }
 
-    public List<EmailResult> getmDataset() {
-        return mDataset;
-    }
 }

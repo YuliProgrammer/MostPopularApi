@@ -73,4 +73,5 @@ public class Articles {
     public void setActive(boolean active) {
         isActive = active;
     }
+
 }

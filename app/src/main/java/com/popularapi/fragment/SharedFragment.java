@@ -8,7 +8,6 @@ import com.popularapi.db.ArticleDatabase;
 import com.popularapi.api.RetrofitClient;
 import com.popularapi.ui.main.adapter.ShareAdapter;
 
-import android.util.Log;
 import android.os.Bundle;
 
 import android.view.View;
@@ -58,8 +57,6 @@ public class SharedFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<ShareResponse> call, Throwable t) {
-                                Log.i("Failure", "view error", t);
-
                             }
                         });
                         break;
@@ -73,8 +70,6 @@ public class SharedFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<ShareResponse> call, Throwable t) {
-                                Log.i("Failure", "view error", t);
-
                             }
                         });
                         break;
@@ -88,8 +83,6 @@ public class SharedFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<ShareResponse> call, Throwable t) {
-                                Log.i("Failure", "view error", t);
-
                             }
                         });
                         break;
@@ -103,8 +96,6 @@ public class SharedFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<ShareResponse> call, Throwable t) {
-                                Log.i("Failure", "view error", t);
-
                             }
                         });
                         break;
@@ -113,7 +104,6 @@ public class SharedFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
         spinner.setAdapter(adapter);
@@ -130,7 +120,7 @@ public class SharedFragment extends Fragment {
     }
 
 
-    private void workWithArticle(Response<ShareResponse> response){
+    private void workWithArticle(Response<ShareResponse> response) {
         List<ShareResult> shareResults = response.body().getResults();
         addInDatabase(shareResults);
         mAdapter.setDataset(shareResults);
@@ -138,8 +128,6 @@ public class SharedFragment extends Fragment {
     }
 
     private void addInDatabase(List<ShareResult> shareResults) {
-        database.getTitlesDao().clearTable();
-
         for (ShareResult view : shareResults) {
             Titles title = new Titles(view.getTitle());
             if (!database.getTitlesDao().containsTitle(view.getTitle())) {

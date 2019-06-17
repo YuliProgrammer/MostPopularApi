@@ -3,16 +3,18 @@ package com.popularapi.ui.main.adapter;
 import com.popularapi.R;
 import com.popularapi.model.share.ShareResult;
 
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import java.util.List;
 import java.util.ArrayList;
 
 import com.bumptech.glide.Glide;
 
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
 import android.support.v7.widget.RecyclerView;
 
 public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.MyViewHolder> {
@@ -47,8 +49,8 @@ public class ShareAdapter extends RecyclerView.Adapter<ShareAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(ShareAdapter.MyViewHolder holder, int position) {
         holder.title.setText(mDataset.get(position).getTitle());
-        Glide.with(holder.view).load(mDataset.get(position).getMedia().get(0).getMediaMetadata().get(0).getUrl()).
-                into(holder.image);
+        Glide.with(holder.view).load(mDataset.get(position).getMedia().get(0).getMediaMetadata().get(0).getUrl())
+                .into(holder.image);
     }
 
     @Override

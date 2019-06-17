@@ -1,16 +1,13 @@
 package com.popularapi.fragment;
 
 import com.popularapi.R;
-import com.popularapi.db.ArticleDatabase;
-import com.popularapi.db.table.Articles;
-import com.popularapi.db.table.Titles;
-import com.popularapi.api.RetrofitClient;
+import com.popularapi.db.table.*;
+import com.popularapi.model.email.*;
 import com.popularapi.helper.DbHelper;
-import com.popularapi.model.email.EmailResponse;
-import com.popularapi.model.email.EmailResult;
+import com.popularapi.api.RetrofitClient;
+import com.popularapi.db.ArticleDatabase;
 import com.popularapi.ui.main.adapter.EmailAdapter;
 
-import android.util.Log;
 import android.os.Bundle;
 
 import android.view.View;
@@ -54,6 +51,7 @@ public class EmailedFragment extends Fragment {
         RetrofitClient.getApiService().getEmail().enqueue(new Callback<EmailResponse>() {
             @Override
             public void onResponse(Call<EmailResponse> call, Response<EmailResponse> response) {
+                database.getArticleDao().clearTable();
                 database.getTitlesDao().clearTable();
 
                 for (EmailResult email : response.body().getResults()) {
@@ -73,7 +71,6 @@ public class EmailedFragment extends Fragment {
 
             @Override
             public void onFailure(Call<EmailResponse> call, Throwable t) {
-                Log.i("Failure", "email error", t);
             }
         });
     }

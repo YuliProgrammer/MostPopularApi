@@ -1,30 +1,39 @@
 package com.popularapi;
 
-import com.popularapi.db.table.Articles;
-import com.popularapi.db.table.FavoritesArticle;
+import com.popularapi.db.table.*;
 import com.popularapi.db.ArticleDatabase;
 import com.popularapi.helper.DbHelper;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+
+import android.util.Base64;
 import android.os.Bundle;
-import android.util.Log;
 
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
-import android.widget.ImageView;
+import android.webkit.WebSettings;
+import android.webkit.WebViewClient;
 import android.content.DialogInterface;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+
 import java.util.List;
+import java.io.ByteArrayOutputStream;
 
 public class ArticleActivity extends AppCompatActivity {
 
     TextView mainText;
     TextView additionalText;
-    ImageView image;
     public static ArticleDatabase database = DbHelper.database;
 
     @Override
@@ -33,15 +42,13 @@ public class ArticleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article);
 
         if (database.getFavoritesArticleDao().containsFavorites(getActiveTitle())) {
-            Log.i("FAV", "CHECK");
             mainText = findViewById(R.id.textViewFavorites);
             additionalText = findViewById(R.id.txtAdditionalFavorites);
             mainText.setText(R.string.txt_deleteFavorites);
             additionalText.setText(R.string.txt_additionalFavorites);
         }
 
-        WebView webView = findViewById(R.id.webView);
-        webView.loadUrl(database.getArticleDao().getArticles(getActiveId()).getArticleUrl());
+        downloadWebPage();
     }
 
     public void onBtnFavoritesClick(View view) {
@@ -53,29 +60,22 @@ public class ArticleActivity extends AppCompatActivity {
                 mainText = findViewById(R.id.textViewFavorites);
                 additionalText = findViewById(R.id.txtAdditionalFavorites);
                 String text = mainText.getText().toString();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(ArticleActivity.this);
 
                 if (text.equals("Add to favorites")) {
-                    Log.i("FAV", "Add to favorites");
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(ArticleActivity.this);
                     dialog.setMessage("The article successfully added to favorites");
                     dialog.setCancelable(false);
 
                     dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            FavoritesArticle article = new FavoritesArticle(getActiveTitle());
-                            database.getFavoritesArticleDao().addFavorites(article);
-
+                            addInDb();
                             mainText.setText(R.string.txt_deleteFavorites);
                             additionalText.setText(R.string.txt_additionalFavorites);
                         }
                     });
 
-                    AlertDialog alertDialog = dialog.create();
-                    alertDialog.show();
-
                 } else {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(ArticleActivity.this);
                     dialog.setMessage("Are you sure that you want to delete an article from your favorites?");
                     dialog.setCancelable(true);
 
@@ -96,13 +96,43 @@ public class ArticleActivity extends AppCompatActivity {
                             dialogInterface.cancel();
                         }
                     });
-
-                    AlertDialog alertDialog = dialog.create();
-                    alertDialog.show();
-
                 }
+
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
             }
         });
+    }
+
+    private void downloadWebPage(){
+        WebView webView = findViewById(R.id.webView);
+        WebSettings webSetting = webView.getSettings();
+        webSetting.setBuiltInZoomControls(true);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl(database.getArticleDao().getArticles(getActiveId()).getArticleUrl());
+    }
+
+    private void addInDb() {
+        List<Articles> articles = database.getArticleDao().getAllArticles();
+        for (Articles article : articles) {
+            if (article.isActive()) {
+                Glide.with(this)
+                        .asBitmap()
+                        .load(article.getImageUrl())
+                        .into(new CustomTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                FavoritesArticle article = new FavoritesArticle(getActiveTitle(), getStringImage(resource));
+                                database.getFavoritesArticleDao().addFavorites(article);
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+                            }
+                        });
+                break;
+            }
+        }
     }
 
     private int getActiveId() {
@@ -120,8 +150,12 @@ public class ArticleActivity extends AppCompatActivity {
         return database.getTitlesDao().getTitleName(id);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    private String getStringImage(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] imageBytes = outputStream.toByteArray();
+        String encodedImage = android.util.Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
     }
+
 }

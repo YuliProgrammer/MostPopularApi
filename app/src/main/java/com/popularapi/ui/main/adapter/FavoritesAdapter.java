@@ -3,15 +3,21 @@ package com.popularapi.ui.main.adapter;
 import com.popularapi.R;
 import com.popularapi.db.table.FavoritesArticle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.RecyclerView;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import com.bumptech.glide.Glide;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyViewHolder> {
 
@@ -46,24 +52,15 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     public void onBindViewHolder(FavoritesAdapter.MyViewHolder holder, int position) {
         holder.title.setText(mDataset.get(position).getTitle());
 
-       // byte[] imageArr = ActiveTab.getImage();
-//        byte[] imageArr = mDataset.get(position).getImage();
-//        Log.i("CONVERT", imageArr.toString());
-
-        //Bitmap bmp = BitmapFactory.decodeByteArray(imageArr, 0, imageArr.length);
-//        MyViewHolder.image.setImageBitmap(Bitmap.createScaledBitmap(bmp, MyViewHolder.image.getWidth(),
-//                MyViewHolder.image.getHeight(), false));
-
-//        Glide.with(holder.view).load(mDataset.get(position).getMedia().get(0).getMediaMetadata().get(0).getUrl()).
-//                into(holder.image);
+        String str = mDataset.get(position).getImage();
+        byte data[] = android.util.Base64.decode(str, android.util.Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Glide.with(holder.view).load(bitmap).into(holder.image);
     }
 
     @Override
     public int getItemCount() {
-       return mDataset.size();
+        return mDataset.size();
     }
 
-    public List<FavoritesArticle> getmDataset() {
-        return mDataset;
-    }
 }

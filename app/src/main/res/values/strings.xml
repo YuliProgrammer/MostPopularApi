@@ -2,10 +2,10 @@
     <string name="app_name">Most popular articles from the NYTimes</string>
     <string name="article_name">Article</string>
 
-    <string name="tab_emailed">most emailed</string>
-    <string name="tab_shared">most shared</string>
-    <string name="tab_viewed">most viewed</string>
-    <string name="tab_favorites">Favorites</string>
+    <string name="tab_emailed">emailed</string>
+    <string name="tab_shared">shared</string>
+    <string name="tab_viewed">viewed</string>
+    <string name="tab_favorites">favorites</string>
 
     <string name="txt_addFavorites">Add to favorites</string>
     <string name="txt_additionalAddFavorites">Add to favorites to view the article offline.</string>
